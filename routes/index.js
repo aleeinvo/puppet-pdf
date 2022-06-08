@@ -77,10 +77,13 @@ router.get('/dev', async (req, res) => {
   ]
   res.render('index', { title: 'Express', user, levels }, async (error, html) => {
     await page.setContent(html);
-    const pdfPath = 'cv-' + Date.now() + '.pdf';
-    const pdf = await page.pdf({ format: 'A4', scale: 0.5, path: path.join(global.uploadDir, pdfPath) });
+    const filename = 'cv-' + Date.now() + '.pdf';
+    const pdfPath = path.join(global.uploadDir, filename);
+    const pdf = await page.pdf({ format: 'A4', scale: 0.5, path: pdfPath });
 
     await browser.close();
+
+    res.download(pdfPath);
 
     res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
     res.send(pdf)
